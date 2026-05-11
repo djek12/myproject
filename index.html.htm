@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Стендовый доклад: Контроль в истории информатики</title>
+    <!-- Chart.js CDN для круговой диаграммы -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #e2e8f0;
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+            line-height: 1.45;
+            padding: 40px 24px;
+        }
+
+        /* Контейнер постера – имитация листа А1 (вертикальный) */
+        .poster {
+            max-width: 1300px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 25px 45px -12px rgba(0,0,0,0.35);
+            overflow: hidden;
+            padding: 32px 36px 42px 36px;
+            transition: all 0.2s;
+        }
+
+        /* Заголовочная секция */
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #1e4a76;
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+        }
+        .title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: #0c4a6e;
+            line-height: 1.2;
+            letter-spacing: -0.5px;
+            margin-bottom: 12px;
+        }
+        .authors {
+            font-size: 1.3rem;
+            font-weight: 500;
+            color: #2c3e4e;
+            margin-top: 8px;
+        }
+        .affiliation {
+            font-size: 1rem;
+            color: #2c5a7a;
+            margin-top: 6px;
+            font-style: normal;
+        }
+        .contacts {
+            font-size: 0.85rem;
+            color: #2c5a7a;
+            margin-top: 10px;
+            background: #f1f5f9;
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 40px;
+        }
+
+        /* Сетка 2 колонки с отступами */
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-bottom: 32px;
+        }
+
+        /* Стили для блоков (секций) */
+        .section {
+            background: #fefefe;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            padding: 18px 20px 22px 20px;
+            transition: 0.1s;
+            border: 1px solid #e9edf2;
+        }
+        .section h3 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #1e3a5f;
+            border-left: 6px solid #2c7da0;
+            padding-left: 14px;
+            margin-bottom: 18px;
+            margin-top: 0;
+        }
+        .section h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c5a7a;
+            margin: 12px 0 8px 0;
+        }
+        .section p, .section li {
+            font-size: 0.96rem;
+            color: #1f2d3d;
+            margin-bottom: 10px;
+            text-align: justify;
+        }
+        .stat-highlight {
+            font-weight: 700;
+            color: #1e6f5c;
+            background: #e7f5ef;
+            border-radius: 12px;
+            padding: 2px 8px;
+            display: inline-block;
+            margin: 2px 0;
+        }
+        .stat-number {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: #0b3b4f;
+        }
+        .kv-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .kv-card {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 12px 14px;
+            flex: 1 1 180px;
+            border-left: 4px solid #2c7da0;
+        }
+        .kv-card .value {
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: #1f6392;
+            line-height: 1.1;
+        }
+        .bar-container {
+            background: #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .bar-fill {
+            background: #2c7da0;
+            color: white;
+            padding: 5px 10px;
+            text-align: right;
+            font-weight: bold;
+            font-size: 0.85rem;
+            border-radius: 12px;
+        }
+
+        /* График и оформление диаграммы */
+        .chart-box {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 10px;
+            margin: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            text-align: center;
+        }
+        canvas {
+            max-height: 280px;
+            margin: 0 auto;
+        }
+
+        /* Футер + библиография */
+        .footer {
+            border-top: 1px solid #cbd5e1;
+            margin-top: 20px;
+            padding-top: 24px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            font-size: 0.8rem;
+        }
+        .references {
+            background: #f7f9fc;
+            padding: 12px 18px;
+            border-radius: 18px;
+        }
+        .ref-item {
+            margin-bottom: 8px;
+            font-size: 0.75rem;
+        }
+        .contact-footer {
+            text-align: right;
+            font-size: 0.8rem;
+            padding-top: 10px;
+        }
+
+        @media (max-width: 850px) {
+            .poster {
+                padding: 20px;
+            }
+            .grid-2col {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .title {
+                font-size: 2rem;
+            }
+            .footer {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+        }
+        .badge-icon {
+            background: #eef2ff;
+            border-radius: 30px;
+            padding: 2px 12px;
+            font-weight: 500;
+            font-size: 0.75rem;
+            display: inline-block;
+            margin-right: 6px;
+        }
+        .insight {
+            background: #fef9e3;
+            border-left: 4px solid #e6b422;
+            padding: 12px 15px;
+            border-radius: 16px;
+            margin-top: 12px;
+        }
+    </style>
+</head>
+<body>
+<div class="poster">
+    <!-- ЗАГОЛОВОК И АВТОРЫ -->
+    <div class="header">
+        <div class="title">ОРГАНИЗАЦИЯ КОНТРОЛЯ И ОЦЕНКИ УЧЕБНЫХ ДОСТИЖЕНИЙ СТУДЕНТОВ<br> ПО ДИСЦИПЛИНЕ «ИСТОРИЯ ИНФОРМАТИКИ»: ОПТИМАЛЬНОСТЬ ВЫБОРА КОНТРОЛЬНО-ИЗМЕРИТЕЛЬНЫХ МАТЕРИАЛОВ</div>
+        <div class="authors">Худов Е.А.<sup>1</sup>, Зайцева С.А.<sup>1</sup></div>
+        <div class="affiliation"><sup>1</sup> Ивановский государственный университет, Шуйский филиал</div>
+        <div class="contacts">✉️ khudov@sspu.ru  |  стендовый доклад | Конференция 2026</div>
+    </div>
+
+    <!-- СЕТКА 2 КОЛОНКИ: левая колонка (Введение, Цели, Методология, часть результатов) -->
+    <div class="grid-2col">
+        <!-- ЛЕВАЯ КОЛОНКА -->
+        <div>
+            <!-- ВВЕДЕНИЕ (с подразделами как на фото) -->
+            <div class="section">
+                <h3>📌 Введение</h3>
+                <p><strong>Описание проблемы:</strong> В условиях цифровизации и балльно-рейтинговой системы (БРС) контрольно-измерительные материалы (КИМ) становятся не только инструментом фиксации знаний, но и управления качеством обучения. Однако для дисциплины «История информатики» критичен вопрос: насколько цифровые технологии способны оценить глубину понимания философских и методологических аспектов науки?</p>
+                <p><strong>Обзор литературы:</strong> Исследования (Антонова, Щербакова, 2026; Печенкин, Носкова, 2026) доказывают эффективность LMS-платформ для автоматизированного контроля фактов, но недостаточно анализируют границы применения ИТ в гуманитарных курсах.</p>
+                <p><strong>Белые пятна:</strong> Отсутствуют эмпирические данные о способности тестов оценивать понимание философских проблем ИИ, этики открытий и феномен «иллюзии знания» при тестировании.</p>
+                <p><strong>Актуальность:</strong> Необходимость научно обоснованной гибридной модели контроля, сочетающей скорость цифровых инструментов и экспертную оценку преподавателя.</p>
+            </div>
+
+            <!-- ЦЕЛЬ ИССЛЕДОВАНИЯ -->
+            <div class="section">
+                <h3>🎯 Цель исследования</h3>
+                <p>Определить оптимальную модель организации контроля и оценки знаний студентов по дисциплине «История информатики» в условиях балльно-рейтинговой системы и цифровой трансформации образования.</p>
+                <p><strong>Задачи:</strong> выявить отношение студентов к автоматизированным и экспертным формам КИМ; оценить риски «поверхностного обучения»; определить предпочтительное сочетание цифровых и традиционных средств контроля.</p>
+            </div>
+
+            <!-- МЕТОДОЛОГИЯ -->
+            <div class="section">
+                <h3>🔬 Методология исследования</h3>
+                <p><strong>Теоретическая рамка:</strong> Балльно-рейтинговая система, гибридные модели оценивания, компетентностный подход.</p>
+                <p><strong>Выборка:</strong> Студенты, завершившие курс «История информатики» в Шуйском филиале ИвГУ (N ≈ 80 респондентов).</p>
+                <p><strong>Методы:</strong> анкетирование, анализ эффективности КИМ, сравнительная оценка форм контроля.</p>
+                <p><strong>Инструменты:</strong> LMS Moodle, Google Forms, Яндекс Формы, цифровое портфолио, проектные задания с экспертной рецензией.</p>
+            </div>
+
+            <!-- КЛЮЧЕВЫЕ РЕЗУЛЬТАТЫ (текстовые + бары) -->
+            <div class="section">
+                <h3>📊 Ключевые результаты (I)</h3>
+                <div class="kv-grid">
+                    <div class="kv-card"><div class="value">68%</div> считают автотесты высоко объективными</div>
+                    <div class="kv-card"><div class="value">78%</div> ценят оперативность цифрового контроля</div>
+                    <div class="kv-card"><div class="value">72%</div> портфолио отражает компетенции лучше зачёта</div>
+                </div>
+                <div class="insight">
+                    <strong>📢 84% студентов</strong> подчеркнули: критически важна <strong>развёрнутая рецензия преподавателя</strong> на творческий проект. Лишь 16% устраивает простое зачисление баллов.
+                    <div class="bar-container" style="margin-top: 10px;">
+                        <div class="bar-fill" style="width: 84%; background: #2c7da0;">84% – важна рецензия</div>
+                    </div>
+                    <div class="bar-container">
+                        <div class="bar-fill" style="width: 16%; background: #9aaebf;">16% – только баллы</div>
+                    </div>
+                </div>
+                <p><strong>❓ Иллюзия знания:</strong> 48% студентов подтвердили, что успешное прохождение теста (методом исключения) создаёт ложное чувство освоения темы – они не могут воспроизвести материал связно.</p>
+                <p><strong>⏳ Эффективность цифровых тренажёров (хронология):</strong> средний балл 4,2 из 5. При этом 54% отметили, что успех зависит от реального понимания логики, а 36% признались в механическом запоминании дат под формат теста.</p>
+            </div>
+        </div>
+
+        <!-- ПРАВАЯ КОЛОНКА -->
+        <div>
+            <!-- СПЕЦИАЛИЗИРОВАННЫЕ ДАННЫЕ И ГРАФИК №1 (круговая) -->
+            <div class="section">
+                <h3>🧠 График 1: Оценка философских концепций цифровым тестом</h3>
+                <p><em>«Может ли машина мыслить?», «Критика чистого разума» в приложении к компьютерной грамматике</em></p>
+                <div class="chart-box">
+                    <canvas id="philosophyPieChart" width="400" height="300" style="max-width:100%; height:auto;"></canvas>
+                </div>
+                <p>✅ 62% студентов убеждены: <strong>цифровой тест не способен</strong> адекватно оценить глубину понимания философских и этических аспектов истории информатики, необходим живой диалог или эссе. Лишь 28% допускают тесты при высоком качестве дистракторов, 10% не определились.</p>
+                <p>📌 <strong>Вывод:</strong> темы, связанные с методологией и социальной значимостью ИТ-открытий, должны оставаться в зоне <strong>экспертной оценки преподавателя</strong>.</p>
+            </div>
+
+            <!-- Предпочтения по форматам заданий -->
+            <div class="section">
+                <h3>📌 Специализированные КИМ по истории информатики</h3>
+                <p><strong>Предпочтения студентов среди цифровых заданий:</strong></p>
+                <ul style="margin-left: 20px; margin-bottom: 10px;">
+                    <li>📅 Виртуальная лента времени — <span class="stat-highlight">45%</span></li>
+                    <li>🔗 Схемы-цепочки развития элементной базы (от ламп до СБИС) — <span class="stat-highlight">35%</span></li>
+                    <li>🖼️ Сопоставление визуальных образов (фото учёных и изобретений) — <span class="stat-highlight">20%</span></li>
+                </ul>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width: 45%; background: #3b82f6;">Лента времени 45%</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width: 35%; background: #4895ef;">Схемы 35%</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width: 20%; background: #7aa2f7;">Визуальное сопоставление 20%</div>
+                </div>
+                <p class="insight" style="margin-top: 12px;"><strong>🔍 Важный нюанс:</strong> 48% опрошенных подтвердили, что автоматическая система иногда создаёт иллюзию знания; при этом 54% отмечают, что глубокое понимание хронологии требует осмысления, а не механической зубрежки.</p>
+            </div>
+
+            <!-- ОБСУЖДЕНИЕ + ГИБРИДНАЯ МОДЕЛЬ -->
+            <div class="section">
+                <h3>💬 Обсуждение и гибридная модель</h3>
+                <p>Студенты чётко разделяют функции <strong>«цифры»</strong> (автоматизация, фактологический скелет, оперативная диагностика) и <strong>«педагога»</strong> (интерпретация истории, философский диалог, мотивирующая обратная связь).</p>
+                <p>Оптимальная модель контроля, одобренная большинством респондентов:</p>
+                <ul>
+                    <li>✔️ <strong>Текущий контроль</strong> — автоматизированные тесты в Moodle, мгновенный фидбек, рейтинговые баллы.</li>
+                    <li>✔️ <strong>Рубежный и итоговый контроль</strong> — проектные задания, эссе, защита портфолио с <strong>экспертной рецензией</strong>.</li>
+                    <li>✔️ <strong>Развёрнутый комментарий</strong> к творческой работе обязателен: 84% студентов считают обратную связь критически важной.</li>
+                </ul>
+                <p><strong>Риск избыточной автоматизации:</strong> механическое запоминание (36% опрошенных признались в зубрежке дат) и «иллюзия владения темой» (48%) — подтверждают необходимость устных форм и аналитических заданий.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ВЫВОДЫ + БИБЛИОГРАФИЯ + КОНТАКТЫ (нижняя часть) -->
+    <div class="footer">
+        <div class="references">
+            <h4 style="margin-top: 0; font-size: 1.2rem;">📚 Основные выводы</h4>
+            <ul style="margin-left: 20px;">
+                <li>🔹 Эффективная организация контроля в БРС требует перехода к <strong>комплексной гибридной модели</strong> (автотесты + экспертные формы).</li>
+                <li>🔹 Цифровые платформы обеспечивают прозрачность накопления баллов и скорость обратной связи, но НЕ заменяют педагогического анализа.</li>
+                <li>🔹 Для истории информатики оптимально: тесты на факты (даты, поколения ЭВМ, учёные) + эссе/проекты по философским проблемам ИИ.</li>
+                <li>🔹 Рекомендуемая доля автоматизированного контроля – до 60%, остальное – экспертная оценка с рецензиями.</li>
+                <li>🔹 <strong>48% студентов</strong> подтвердили «иллюзию знания» – необходимо сохранять устные коллоквиумы и защиту проектов.</li>
+            </ul>
+            <div class="insight" style="background: #eaf7f0; margin-top: 12px;">
+                ⚡<strong> Ключевая рекомендация:</strong> гибридный контроль — не компромисс, а методическая необходимость для дисциплин с мировоззренческим компонентом.
+            </div>
+        </div>
+        <div>
+            <div class="references" style="margin-bottom: 20px;">
+                <h4 style="margin-top: 0; font-size: 1.1rem;">📖 Библиографический список</h4>
+                <div class="ref-item">1. Антонова Н.Н., Щербакова Е.В. Опыт использования LMS в учебном процессе педагогического вуза // Современное педагогическое образование. – 2026. – №1. – С. 37-39.</div>
+                <div class="ref-item">2. Печенкин Е.А., Носкова Г.В. Обучение на удалёнке: преимущества и риски дистанционного образования // Молодежная дипломатия... – М.: ИД «УМЦ», 2026. – С. 140-146.</div>
+                <div class="ref-item">3. Хлыбова Н.И. Эволюция онлайн образования: преимущества и недостатки // Гуманитарный научный журнал. – 2026. – №2-1. – С. 112-117.</div>
+            </div>
+            <div class="contact-footer">
+                <h4 style="font-size: 1rem;">📞 Контакты</h4>
+                <p><strong>Худов Е.А.</strong><br>
+                Ивановский государственный университет, Шуйский филиал<br>
+                E-mail: khudov@sspu.ru<br>
+                Научный руководитель: проф. Зайцева С.А.</p>
+                <p style="margin-top: 12px;"><em>Исследование поддержано кафедрой информатики и методики обучения</em></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Дополнительная статистическая вставка (подчеркивает результаты) -->
+    <div style="margin-top: 20px; background: #eef2fa; border-radius: 24px; padding: 14px 20px; display: flex; flex-wrap: wrap; justify-content: space-between; font-size: 0.85rem;">
+        <span>📈 <strong>68%</strong> высокая объективность тестов</span>
+        <span>⏱️ <strong>78%</strong> ценят скорость результата</span>
+        <span>📂 <strong>72%</strong> портфолио > традиционного зачёта</span>
+        <span>📝 <strong>84%</strong> требуют развёрнутую рецензию</span>
+        <span>🧩 <strong>48%</strong> иллюзия знания</span>
+        <span>🎓 <strong>4,2/5</strong> оценка тренажёров по хронологии</span>
+    </div>
+</div>
+
+<script>
+    // Построение КРУГОВОЙ диаграммы (Graph 1) согласно данным статьи и предпочтению пользователя
+    const ctx = document.getElementById('philosophyPieChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: [
+                'Тест не способен (нужен диалог/эссе)',
+                'Допускают тесты при качественных дистракторах',
+                'Не определились'
+            ],
+            datasets: [{
+                data: [62, 28, 10],
+                backgroundColor: ['#c44536', '#2c7da0', '#a0c4e2'],
+                borderWidth: 0,
+                hoverOffset: 8,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: { size: 12, weight: '500' },
+                        boxWidth: 14
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            return `${tooltipItem.label}: ${tooltipItem.raw}%`;
+                        }
+                    }
+                }
+            },
+            layout: {
+                padding: 10
+            }
+        }
+    });
+</script>
+<!-- Дополнительное примечание: все цифровые данные строго соответствуют результатам, описанным в статье Худова Е.А. и Зайцевой С.А. -->
+</body>
+</html>
